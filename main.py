@@ -1,10 +1,10 @@
 import pygame
-from pygame.locals import *
+import player
 
 # Settings
 ''' window '''
 SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 800
+SCREEN_HEIGHT = 720
 TITLE = "Name of Game"
 FPS = 60
 
@@ -69,7 +69,6 @@ class TitleScene(Scene):
                     print("Opening Option....")
                     self.next_scene = OptionScene()
 
-
     def update(self):
         pass
 
@@ -84,6 +83,9 @@ class TitleScene(Scene):
 class GameScene(Scene):
     def __init__(self):
         super().__init__()
+        self.map = pygame.image.load("PNG/map.png").convert()
+        self.rect = self.map.get_rect()
+        self.rect.left, self.rect.top = (0, 0)
 
     def process_input(self, events, keys):
         for event in events:
@@ -96,11 +98,7 @@ class GameScene(Scene):
 
     def render(self):
         screen.fill(BLACK)
-        text = font_xl.render("Playing", True, WHITE)
-        rect = text.get_rect()
-        rect.centerx = SCREEN_WIDTH // 2
-        rect.centery = SCREEN_HEIGHT // 2
-        screen.blit(text, rect)
+        screen.blit(self.map, self.rect)
 
 
 class EndScene(Scene):
@@ -186,6 +184,6 @@ class Game:
 
 # Let's do this!
 if __name__ == "__main__":
-    g = Game()
-    g.run()
+    main = Game()
+    main.run()
     pygame.quit()
