@@ -1,26 +1,18 @@
+import time
 import pygame
-import player
-
-# Settings
-''' window '''
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
-TITLE = "Name of Game"
-FPS = 60
-
-''' colors '''
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-
-''' fonts '''
-TITLE_FONT = None
-DEFAULT_FONT = None
+import os
+from player import Player
+from map import *
+from settings import *
 
 # Make window
 pygame.init()
 screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 pygame.display.set_caption(TITLE)
+
+# Pygame clock
 clock = pygame.time.Clock()
+last_time = time.time()
 
 # Load assets
 font_sm = pygame.font.Font(DEFAULT_FONT, 24)
@@ -49,7 +41,7 @@ class Scene:
 class TitleScene(Scene):
     def __init__(self):
         super().__init__()
-        self.bg_menu = pygame.image.load("PNG/BG_01/BG_01.png").convert()
+        self.bg_menu = pygame.image.load("Assets/BG_01/BG_01.png").convert()
         self.start_button = pygame.Rect(480, 288, 320, 72)
         self.option_button = pygame.Rect(480, 432, 320, 72)
         self.rect = self.bg_menu.get_rect()
@@ -83,9 +75,23 @@ class TitleScene(Scene):
 class GameScene(Scene):
     def __init__(self):
         super().__init__()
-        self.map = pygame.image.load("PNG/map.png").convert()
-        self.rect = self.map.get_rect()
-        self.rect.left, self.rect.top = (0, 0)
+        game_folder = os.path.dirname(__file__)
+        asset_folder = os.path.join(game_folder, 'Assets')
+        map_folder = os.path.join(asset_folder, 'Background')
+        character_folder = os.path.join(asset_folder, 'Character sprites')
+
+        self.player_img = pg.image.load(os.path.join(character_folder, P_IMG)).convert_alpha()
+        self.map = TiledMap(os.path.join(map_folder, 'Farm.tmx'))
+        self.map_img = self.map.make_map()
+        self.map_rect = self.map_img.get_rect()
+        self.camera = Camera(self.map.width, self.map.height)
+        self.all_sprites = pg.sprite.Group()
+        self.player = Player(self, 0, 0)
+        self.dt = clock.tick(FPS) / 1000
+
+    """def frame_tracking(self):
+        # Independent Frame
+        self.dt = clock.tick(FPS) / 1000"""
 
     def process_input(self, events, keys):
         for event in events:
@@ -94,11 +100,14 @@ class GameScene(Scene):
                     self.next_scene = EndScene()
 
     def update(self):
-        pass
+        self.all_sprites.update()
+        self.camera.update(self.player)
 
     def render(self):
-        screen.fill(BLACK)
-        screen.blit(self.map, self.rect)
+        #self.map_img = pygame.transform.scale(self.map_img, [2560, 1440])
+        screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+        for sprite in self.all_sprites:
+            screen.blit(sprite.image, self.camera.apply(sprite))
 
 
 class EndScene(Scene):
@@ -165,6 +174,7 @@ class Game:
             pressed_keys = pygame.key.get_pressed()
             filtered_events = []
 
+            # Quit tracking
             for event in pygame.event.get():
                 if self.is_quit_event(event, pressed_keys):
                     self.active_scene.terminate()
