@@ -1,6 +1,6 @@
 from os import path
 import pygame as pg
-from settings import P_SPEED
+from settings import *
 vector = pg.math.Vector2
 
 
@@ -8,13 +8,15 @@ class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        """ game_folder = path.dirname(__file__)
+        game_folder = path.dirname(__file__)
         asset_folder = path.join(game_folder, 'Assets')
         sprites_folder = path.join(asset_folder, 'Character sprites')
-        self.images = [pg.image.load(path.join(sprites_folder, 'walk_' + str(i) + '.png')).convert_alpha()
-                       for i in range(14)]"""
+        self.images = [pg.image.load(path.join(sprites_folder, 'character_' + str(i) + '.png')).convert_alpha()
+                       for i in range(2)]
         self.game = game
-        self.image = game.player_img
+        self.current_image = 0
+        self.image = self.images[self.current_image]
+        self.image = pg.transform.scale(self.image, [32, 32])
         self.rect = self.image.get_rect()
         self.x = x
         self.y = y
@@ -31,6 +33,7 @@ class Player(pg.sprite.Sprite):
         elif keys[pg.K_s]:
             self.dy = P_SPEED
         elif keys[pg.K_d]:
+            self.current_image += 1
             self.dx = P_SPEED
 
     def wall_collision(self, dx=0, dy=0):

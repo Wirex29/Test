@@ -26,8 +26,8 @@ class TiledMap:
 class Camera:
     def __init__(self, width, height):
         self.camera = pg.Rect(0, 0, width, height)
-        self.width = width
-        self.height = height
+        self.width = width * 2
+        self.height = height * 2
 
     def apply(self, entity):
         return entity.rect.move(self.camera.topleft)

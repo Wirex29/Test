@@ -75,15 +75,21 @@ class TitleScene(Scene):
 class GameScene(Scene):
     def __init__(self):
         super().__init__()
+        # Set up Folder Directory
         game_folder = os.path.dirname(__file__)
         asset_folder = os.path.join(game_folder, 'Assets')
         map_folder = os.path.join(asset_folder, 'Background')
         character_folder = os.path.join(asset_folder, 'Character sprites')
 
-        self.player_img = pg.image.load(os.path.join(character_folder, P_IMG)).convert_alpha()
+        # self.player_img = pg.image.load(os.path.join(character_folder, P_IMG)).convert_alpha()
+        # Load map data
         self.map = TiledMap(os.path.join(map_folder, 'Farm.tmx'))
         self.map_img = self.map.make_map()
+
+        self.map_img = pygame.transform.scale(self.map_img, [SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2])
+
         self.map_rect = self.map_img.get_rect()
+
         self.camera = Camera(self.map.width, self.map.height)
         self.all_sprites = pg.sprite.Group()
         self.player = Player(self, 0, 0)
@@ -104,7 +110,6 @@ class GameScene(Scene):
         self.camera.update(self.player)
 
     def render(self):
-        #self.map_img = pygame.transform.scale(self.map_img, [2560, 1440])
         screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
         for sprite in self.all_sprites:
             screen.blit(sprite.image, self.camera.apply(sprite))

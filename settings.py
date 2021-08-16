@@ -1,7 +1,7 @@
 # Settings
 ''' window '''
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 TITLE = "Name of Game"
 FPS = 60
 
@@ -16,4 +16,4 @@ DEFAULT_FONT = None
 
 '''PLAYER SETTING'''
 P_SPEED = 100
-P_IMG = 'walk1.png'
+P_IMG = 'character.png'
