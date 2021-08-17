@@ -17,3 +17,4 @@ DEFAULT_FONT = None
 '''PLAYER SETTING'''
 P_SPEED = 100
 P_IMG = 'character.png'
+

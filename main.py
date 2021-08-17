@@ -20,6 +20,10 @@ font_md = pygame.font.Font(DEFAULT_FONT, 32)
 font_xl = pygame.font.Font(TITLE_FONT, 96)
 
 
+def time():
+    pass
+
+
 # Scenes
 class Scene:
     def __init__(self):
@@ -92,7 +96,7 @@ class GameScene(Scene):
 
         self.camera = Camera(self.map.width, self.map.height)
         self.all_sprites = pg.sprite.Group()
-        self.player = Player(self, 0, 0)
+        self.player = Player(self, 640, 380)
         self.dt = clock.tick(FPS) / 1000
 
     """def frame_tracking(self):
@@ -110,9 +114,18 @@ class GameScene(Scene):
         self.camera.update(self.player)
 
     def render(self):
+        # Map render
         screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
+
+        # Character render
         for sprite in self.all_sprites:
             screen.blit(sprite.image, self.camera.apply(sprite))
+
+        # Clock render
+        time_clock = font_md.render(str(pg.time.get_ticks() // 1000), False, WHITE)
+        clock_rect = time_clock.get_rect()
+        clock_rect.top, clock_rect.left = [0, 0]
+        screen.blit(time_clock, clock_rect)
 
 
 class EndScene(Scene):
