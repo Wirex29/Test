@@ -9,21 +9,35 @@ class Crop:
             self.growth_stage += 1
 
 
-class Tomato(Crop):
-    def __init__(self, game):
-        super(Tomato, self).__init__(game)
+class Tomato():
+    def __init__(self, days):
+        self.days = days
+        # super(Tomato, self).__init__(game)
         self.crop_type = "tomato"
-        self.grow_day = 0
-        self.growth_time = 16
+        self.planted_date = days
         self.growth_stage = 0
-
-    def plant_crop(self, days):
-        self.grow_day = days
+        self.grow_days = 16
+        self.harvestable = False
 
     def growing(self, days):
-        while self.grow_day <= self.growth_time:
-            if (days - self.grow_day) % 4 >= 1:
+        if (days - self.planted_date) <= self.grow_days:
+            if (days - self.planted_date) % 4 == 0 and self.growth_stage < 4:
                 self.growth_stage += 1
+            if self.growth_stage == 4:
+                self.harvestable = True
 
-    def update(self):
-        pass
+    def update(self, day):
+        self.growing(day)
+
+
+day = 1
+list_a = [Tomato(day)]
+list_a.append(Tomato(day))
+print(day)
+for i in range(16):
+    day += 1
+    for obj in list_a:
+        obj.growing(day)
+        print("Current stage of plant:", obj.growth_stage)
+        print("Grew for:", day - obj.planted_date, "days")
+        print("Is havestable: ", str(obj.harvestable))

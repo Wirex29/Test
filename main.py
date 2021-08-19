@@ -43,14 +43,6 @@ def time():
     screen.blit(time_clock, clock_rect)
 
 
-def get_tile_pos(events):
-    for event in events:
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-            mouse_pos = pygame.mouse.get_pos()
-            x, y = mouse_pos
-            print(int(x / 16), int(y / 16) )
-
-
 # Scenes
 class Scene:
     def __init__(self):
@@ -135,7 +127,7 @@ class GameScene(Scene):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.next_scene = EndScene()
-        get_tile_pos(events)
+        self.map.get_tile_pos(events)
 
     def update(self):
         self.all_sprites.update()
