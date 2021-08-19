@@ -26,3 +26,4 @@ class Tomato(Crop):
                 self.growth_stage += 1
 
     def update(self):
+        pass
