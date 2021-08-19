@@ -20,33 +20,35 @@ class Player(pg.sprite.Sprite):
         self.image = self.images[self.current_image]
         self.image = pg.transform.scale(self.image, [32, 32])
         self.rect = self.image.get_rect()
-        self.x = x
-        self.y = y
-        # self.dx, self.dy = None, None
+        self.vel = vector(0, 0)
+        self.pos = vector(x, y)
         print("Drawn a player")
 
     def keys_signal(self):
-        self.dx, self.dy = 0, 0
         keys = pg.key.get_pressed()
         if keys[pg.K_a]:
-            self.dx = -P_SPEED
+            self.vel.x = -P_SPEED
         elif keys[pg.K_w]:
-            self.dy = -P_SPEED
+            self.vel.y = -P_SPEED
         elif keys[pg.K_s]:
-            self.dy = P_SPEED
+            self.vel.y = P_SPEED
         elif keys[pg.K_d]:
             self.current_image += 1
-            self.dx = P_SPEED
+            self.vel.x = P_SPEED
+        if self.vel.x != 0 and self.vel.y != 0:
+            self.vel *= 0.7071
 
-    def wall_collision(self, dx=0, dy=0):
+    def wall_collision(self, dir):
         pass
-        # for wall in self.game.
+        """if dir == 'x':
+            
+        # for wall in self.game."""
 
     def update(self):
         self.keys_signal()
-        self.x += self.dx * self.game.dt
-        self.y += self.dy * self.game.dt
-        self.rect.topleft = (self.x, self.y)
+        self.pos += self.vel * self.game.dt
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
 
 
 class Inventory:

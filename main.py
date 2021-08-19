@@ -21,7 +21,34 @@ font_xl = pygame.font.Font(TITLE_FONT, 96)
 
 
 def time():
-    pass
+    time_minute = pg.time.get_ticks() // 500 % 60
+    time_hour = (pg.time.get_ticks() // 500 // 60) % 24
+
+    days = 1
+    if (pg.time.get_ticks() // 500 // 60) // 24 >= 1:
+        days += 1
+    """    elif (pg.time.get_ticks() // 500 // 60) // 24 >= 1 and day >= 30:
+        day = 1"""
+
+    day_clock = font_md.render("Days: " + str(days).zfill(2), False, WHITE)
+    time_clock = font_md.render(str(time_hour).zfill(2) + ":" + str(time_minute).zfill(2), False, WHITE)
+
+    day_rect = day_clock.get_rect()
+    day_rect.top, day_rect.left = [2, 5]
+
+    clock_rect = time_clock.get_rect()
+    clock_rect.top, clock_rect.left = [34, 5]
+
+    screen.blit(day_clock, day_rect)
+    screen.blit(time_clock, clock_rect)
+
+
+def get_tile_pos(events):
+    for event in events:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            mouse_pos = pygame.mouse.get_pos()
+            x, y = mouse_pos
+            print(int(x / 16), int(y / 16) )
 
 
 # Scenes
@@ -108,6 +135,7 @@ class GameScene(Scene):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.next_scene = EndScene()
+        get_tile_pos(events)
 
     def update(self):
         self.all_sprites.update()
@@ -122,10 +150,7 @@ class GameScene(Scene):
             screen.blit(sprite.image, self.camera.apply(sprite))
 
         # Clock render
-        time_clock = font_md.render(str(pg.time.get_ticks() // 1000), False, WHITE)
-        clock_rect = time_clock.get_rect()
-        clock_rect.top, clock_rect.left = [0, 0]
-        screen.blit(time_clock, clock_rect)
+        time()
 
 
 class EndScene(Scene):
