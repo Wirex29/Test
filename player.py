@@ -2,6 +2,7 @@ from os import path
 import pygame as pg
 from settings import *
 from constant import *
+from crops import *
 
 vector = pg.math.Vector2
 
@@ -18,7 +19,7 @@ class Player(pg.sprite.Sprite):
         self.game = game
         self.current_image = 0
         self.image = self.images[self.current_image]
-        self.image = pg.transform.scale(self.image, [32, 32])
+        # self.image = pg.transform.scale(self.image, [32, 32])
         self.rect = self.image.get_rect()
         self.vel = vector(0, 0)
         self.pos = vector(x, y)
@@ -26,17 +27,24 @@ class Player(pg.sprite.Sprite):
 
     def keys_signal(self):
         keys = pg.key.get_pressed()
+        # Character movements
         if keys[pg.K_a]:
             self.vel.x = -P_SPEED
         elif keys[pg.K_w]:
             self.vel.y = -P_SPEED
         elif keys[pg.K_s]:
             self.vel.y = P_SPEED
-        elif keys[pg.K_d]:
+        elif keys[pg.K_d] and len:
             self.current_image += 1
             self.vel.x = P_SPEED
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
+
+    def plant_crop(self, coordx, coordy, days):
+        if not Crop.crop_list:
+            Crop.crop_list = [Tomato(coordx, coordy, days, self.game)]
+        else:
+            Crop.crop_list.append(Tomato(coordx, coordy, days, self.game))
 
     def wall_collision(self, dir):
         pass
@@ -46,6 +54,7 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         self.keys_signal()
+        # self.image = self.images[self.current_image]
         self.pos += self.vel * self.game.dt
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
@@ -89,12 +98,6 @@ class Shop:
         inventory.remove_item(item, 1)
         inventory.money += int(self.shop_list[item]["Price"])
 
-
-inven = Inventory()
-shop = Shop()
-shop.buy_item(inven, 1)
-print(inven.item_list[1])
-print(inven.money)
 
 """class Toolbar:
     def __init__(self, width, height):

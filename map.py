@@ -22,13 +22,6 @@ class TiledMap:
         self.render(mapSurface)
         return mapSurface
 
-    def get_tile_pos(self, events):
-        for event in events:
-            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
-                mouse_pos = pg.mouse.get_pos()
-                x, y = mouse_pos
-                print(int(x - (x % 16)), int(y - (y % 16)))
-
 
 class Camera:
     def __init__(self, width, height):

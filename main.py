@@ -4,6 +4,7 @@ import os
 from player import Player
 from map import *
 from settings import *
+from crops import *
 
 # Make window
 pygame.init()
@@ -19,16 +20,16 @@ font_sm = pygame.font.Font(DEFAULT_FONT, 24)
 font_md = pygame.font.Font(DEFAULT_FONT, 32)
 font_xl = pygame.font.Font(TITLE_FONT, 96)
 
+days = 1
+
 
 def time():
+    global days
     time_minute = pg.time.get_ticks() // 500 % 60
     time_hour = (pg.time.get_ticks() // 500 // 60) % 24
 
-    days = 1
     if (pg.time.get_ticks() // 500 // 60) // 24 >= 1:
         days += 1
-    """    elif (pg.time.get_ticks() // 500 // 60) // 24 >= 1 and day >= 30:
-        day = 1"""
 
     day_clock = font_md.render("Days: " + str(days).zfill(2), False, WHITE)
     time_clock = font_md.render(str(time_hour).zfill(2) + ":" + str(time_minute).zfill(2), False, WHITE)
@@ -102,14 +103,14 @@ class GameScene(Scene):
         game_folder = os.path.dirname(__file__)
         asset_folder = os.path.join(game_folder, 'Assets')
         map_folder = os.path.join(asset_folder, 'Background')
-        character_folder = os.path.join(asset_folder, 'Character sprites')
 
         # self.player_img = pg.image.load(os.path.join(character_folder, P_IMG)).convert_alpha()
         # Load map data
+
         self.map = TiledMap(os.path.join(map_folder, 'Farm.tmx'))
         self.map_img = self.map.make_map()
 
-        self.map_img = pygame.transform.scale(self.map_img, [SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2])
+        # self.map_img = pygame.transform.scale(self.map_img, [SCREEN_WIDTH * 2, SCREEN_HEIGHT * 2])
 
         self.map_rect = self.map_img.get_rect()
 
@@ -118,20 +119,23 @@ class GameScene(Scene):
         self.player = Player(self, 640, 380)
         self.dt = clock.tick(FPS) / 1000
 
-    """def frame_tracking(self):
-        # Independent Frame
-        self.dt = clock.tick(FPS) / 1000"""
-
     def process_input(self, events, keys):
         for event in events:
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.next_scene = EndScene()
-        self.map.get_tile_pos(events)
+            elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                mouse_pos = pg.mouse.get_pos()
+                x, y = mouse_pos
+                coordx = x - (x % 16)
+                coordy = y - (y % 16)
+                self.player.plant_crop(coordx, coordy, days)
 
     def update(self):
         self.all_sprites.update()
         self.camera.update(self.player)
+        for crop in Crop.crop_list:
+            crop.update(days, self.map_img)
 
     def render(self):
         # Map render
@@ -143,6 +147,8 @@ class GameScene(Scene):
 
         # Clock render
         time()
+
+        # Blit crops
 
 
 class EndScene(Scene):
