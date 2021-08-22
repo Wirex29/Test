@@ -18,9 +18,9 @@ class TiledMap:
                         surface.blit(tile, (x * self.gameMap.tilewidth, y * self.gameMap.tileheight))
 
     def make_map(self):
-        mapSurface = pg.Surface((self.width, self.height))
-        self.render(mapSurface)
-        return mapSurface
+        surface = pg.Surface((self.width, self.height))
+        self.render(surface)
+        return surface
 
 
 class Camera:

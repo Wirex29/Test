@@ -1,8 +1,8 @@
-from os import path
 import pygame as pg
 from settings import *
 from constant import *
 from crops import *
+from os import path
 
 vector = pg.math.Vector2
 
@@ -28,13 +28,17 @@ class Player(pg.sprite.Sprite):
     def keys_signal(self):
         keys = pg.key.get_pressed()
         # Character movements
+        # Move left
         if keys[pg.K_a]:
             self.vel.x = -P_SPEED
+        # Move up
         elif keys[pg.K_w]:
             self.vel.y = -P_SPEED
+        # Move down
         elif keys[pg.K_s]:
             self.vel.y = P_SPEED
-        elif keys[pg.K_d] and len:
+        # Move right
+        elif keys[pg.K_d]:
             self.current_image += 1
             self.vel.x = P_SPEED
         if self.vel.x != 0 and self.vel.y != 0:

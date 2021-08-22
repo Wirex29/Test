@@ -104,9 +104,7 @@ class GameScene(Scene):
         asset_folder = os.path.join(game_folder, 'Assets')
         map_folder = os.path.join(asset_folder, 'Background')
 
-        # self.player_img = pg.image.load(os.path.join(character_folder, P_IMG)).convert_alpha()
         # Load map data
-
         self.map = TiledMap(os.path.join(map_folder, 'Farm.tmx'))
         self.map_img = self.map.make_map()
 
@@ -121,9 +119,11 @@ class GameScene(Scene):
 
     def process_input(self, events, keys):
         for event in events:
+            # Space bar to end the game and switch to EndScene
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.next_scene = EndScene()
+            # Plant crop(tomato) at the mouse click position
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
                 x, y = mouse_pos
@@ -132,8 +132,13 @@ class GameScene(Scene):
                 self.player.plant_crop(coordx, coordy, days)
 
     def update(self):
+        # Update character
         self.all_sprites.update()
-        self.camera.update(self.player)
+
+        # Maintain camera Rectangle on the player
+        # self.camera.update(self.player)
+
+        # Iterate through every crop object stored in the list and update the status of it
         for crop in Crop.crop_list:
             crop.update(days, self.map_img)
 

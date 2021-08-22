@@ -18,10 +18,12 @@ class Crop:
 class Tomato(Crop):
     def __init__(self, x, y, days, game):
         super(Tomato, self).__init__(days, game)
+        # Get and store Game's directory
         game_folder = path.dirname(__file__)
         asset_folder = path.join(game_folder, 'Assets')
         map_folder = path.join(asset_folder, 'Background')
 
+        # Load tomato's spritesheet
         self.tomato_spritesheet = Spritesheet(path.join(map_folder, 'metadata.png'))
         self.crop_tomato = [self.tomato_spritesheet.parse_sprite('crop_tomato0.png'),
                             self.tomato_spritesheet.parse_sprite('crop_tomato1.png'),
@@ -39,9 +41,10 @@ class Tomato(Crop):
 
     def growing(self, days):
         if (days - self.planted_date) <= self.grow_days:
-            if (days % (self.planted_date + 4)) == 0 and self.growth_stage < 4:
+            # For every 4 days passed since planted date, the crop stage will grow by 1
+            if (days % (self.planted_date + 4)) == 0 and self.growth_stage < 5:
                 self.growth_stage += 1
-            if self.growth_stage == 4:
+            if self.growth_stage == 5:
                 self.harvestable = True
 
     def update(self, days, screen):
