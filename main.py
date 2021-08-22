@@ -148,8 +148,6 @@ class GameScene(Scene):
         # Clock render
         time()
 
-        # Blit crops
-
 
 class EndScene(Scene):
     def __init__(self):

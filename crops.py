@@ -39,13 +39,13 @@ class Tomato(Crop):
 
     def growing(self, days):
         if (days - self.planted_date) <= self.grow_days:
-            if (days - self.planted_date) % 4 == 0 and self.growth_stage < 4:
+            if (days % (self.planted_date + 4)) == 0 and self.growth_stage < 4:
                 self.growth_stage += 1
             if self.growth_stage == 4:
                 self.harvestable = True
 
     def update(self, days, screen):
-        # self.growing(days)
+        self.growing(days)
         screen.blit(self.crop_tomato[self.growth_stage], [self.coordx, self.coordy])
 
 
