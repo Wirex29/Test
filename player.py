@@ -48,7 +48,7 @@ class Player(pg.sprite.Sprite):
         if not Crop.crop_list:
             Crop.crop_list = [Tomato(coordx, coordy, days, self.game)]
         else:
-            Crop.crop_list.append(Tomato(coordx, coordy, days, self.game))
+            Crop.crop_list.append(Potato(coordx, coordy, days, self.game))
 
     def wall_collision(self, dir):
         pass

@@ -20,15 +20,64 @@ font_sm = pygame.font.Font(DEFAULT_FONT, 24)
 font_md = pygame.font.Font(DEFAULT_FONT, 32)
 font_xl = pygame.font.Font(TITLE_FONT, 96)
 
-days = 1
+
+class Time:
+    def __init__(self):
+        self.hidden_timer = pygame.time.get_ticks()
+        self.minute = 0
+        self.hour = 7
+        self.day = 1
+        self.last_minute = 0
+
+    def running_time(self):
+        self.last_minute = self.hidden_timer
+        # print("Last minute:", self.last_minute)
+        self.hidden_timer = (pg.time.get_ticks() // 500)
+        # print("Hidden timer:", self.hidden_timer)
+        if self.minute < 59:
+            if self.hidden_timer >= self.minute and self.hidden_timer != self.last_minute:
+                self.minute += 1
+                # print("Minute:", self.minute)
+        else:
+            if self.hour < 24:
+                self.hour += 1
+            else:
+                self.hour = 0
+                self.day += 1
+            self.minute = 0
+
+    def pass_day(self):
+        self.minute = 0
+        self.index_minute = 1
+        self.hour = 7
+        self.day += 1
+
+    def render(self):
+        self.calendar = font_md.render("Days: " + str(self.day).zfill(2), False, WHITE)
+        self.clock = font_md.render(str(self.hour).zfill(2) + ":" + str(self.minute).zfill(2), False, WHITE)
+
+        self.calendar_rect = self.calendar.get_rect()
+        self.calendar_rect.top, self.calendar_rect.left = [2, 5]
+
+        self.clock_rect = self.clock.get_rect()
+        self.clock_rect.top, self.clock_rect.left = [34, 5]
+
+        screen.blit(self.calendar, self.calendar_rect)
+        screen.blit(self.clock, self.clock_rect)
+
+    def update(self):
+        self.running_time()
+
+
+"""days = 1
 
 
 def time():
     global days
-    time_minute = pg.time.get_ticks() // 500 % 60
-    time_hour = (pg.time.get_ticks() // 500 // 60) % 24
+    time_minute = pg.time.get_ticks() // 1000 % 60
+    time_hour = (pg.time.get_ticks() // 1000 // 60) % 24
 
-    if (pg.time.get_ticks() // 500 // 60) // 24 >= 1:
+    if time_hour == 0:
         days += 1
 
     day_clock = font_md.render("Days: " + str(days).zfill(2), False, WHITE)
@@ -42,6 +91,7 @@ def time():
 
     screen.blit(day_clock, day_rect)
     screen.blit(time_clock, clock_rect)
+"""
 
 
 # Scenes
@@ -116,6 +166,7 @@ class GameScene(Scene):
         self.all_sprites = pg.sprite.Group()
         self.player = Player(self, 640, 380)
         self.dt = clock.tick(FPS) / 1000
+        self.time = Time()
 
     def process_input(self, events, keys):
         for event in events:
@@ -129,7 +180,7 @@ class GameScene(Scene):
                 x, y = mouse_pos
                 coordx = x - (x % 16)
                 coordy = y - (y % 16)
-                self.player.plant_crop(coordx, coordy, days)
+                self.player.plant_crop(coordx, coordy, self.time.day)
 
     def update(self):
         # Update character
@@ -140,7 +191,10 @@ class GameScene(Scene):
 
         # Iterate through every crop object stored in the list and update the status of it
         for crop in Crop.crop_list:
-            crop.update(days, self.map_img)
+            crop.update(self.time.day, self.map_img)
+
+        # Update time
+        self.time.update()
 
     def render(self):
         # Map render
@@ -151,7 +205,7 @@ class GameScene(Scene):
             screen.blit(sprite.image, self.camera.apply(sprite))
 
         # Clock render
-        time()
+        self.time.render()
 
 
 class EndScene(Scene):
