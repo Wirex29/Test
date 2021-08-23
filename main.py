@@ -1,7 +1,7 @@
 import time
 import pygame
 import os
-from player import Player
+from player import Player, Inventory
 from map import *
 from settings import *
 from crops import *
@@ -48,7 +48,6 @@ class Time:
 
     def pass_day(self):
         self.minute = 0
-        self.index_minute = 1
         self.hour = 7
         self.day += 1
 
@@ -149,11 +148,6 @@ class TitleScene(Scene):
 class GameScene(Scene):
     def __init__(self):
         super().__init__()
-        # Set up Folder Directory
-        game_folder = os.path.dirname(__file__)
-        asset_folder = os.path.join(game_folder, 'Assets')
-        map_folder = os.path.join(asset_folder, 'Background')
-
         # Load map data
         self.map = TiledMap(os.path.join(map_folder, 'Farm.tmx'))
         self.map_img = self.map.make_map()
@@ -165,6 +159,7 @@ class GameScene(Scene):
         self.camera = Camera(self.map.width, self.map.height)
         self.all_sprites = pg.sprite.Group()
         self.player = Player(self, 640, 380)
+        self.inventory = Inventory()
         self.dt = clock.tick(FPS) / 1000
         self.time = Time()
 
@@ -174,13 +169,15 @@ class GameScene(Scene):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     self.next_scene = EndScene()
-            # Plant crop(tomato) at the mouse click position
+            # Plant crop at the mouse click position
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
                 x, y = mouse_pos
                 coordx = x - (x % 16)
                 coordy = y - (y % 16)
+
                 self.player.plant_crop(coordx, coordy, self.time.day)
+                self.player.harvest(coordx, coordy)
 
     def update(self):
         # Update character

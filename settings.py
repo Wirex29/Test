@@ -1,8 +1,10 @@
+from os import path
+
 # Settings
-''' window '''
+''' WINDOW '''
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-TITLE = "Name of Game"
+TITLE = "Bootleg Harvest Moon"
 FPS = 60
 
 ''' colors '''
@@ -13,8 +15,12 @@ WHITE = (255, 255, 255)
 TITLE_FONT = None
 DEFAULT_FONT = None
 
-
 '''PLAYER SETTING'''
 P_SPEED = 100
 P_IMG = 'character.png'
 
+'''FOLDER DIRECTORY'''
+game_folder = path.dirname(__file__)
+asset_folder = path.join(game_folder, 'Assets')
+map_folder = path.join(asset_folder, 'Background')
+sprites_folder = path.join(asset_folder, 'Character sprites')

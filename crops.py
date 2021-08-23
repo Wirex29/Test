@@ -1,5 +1,5 @@
 from spritesheet import Spritesheet
-from os import path
+from settings import *
 
 
 class Crop:
@@ -18,11 +18,7 @@ class Crop:
 class Tomato(Crop):
     def __init__(self, x, y, days, game):
         super(Tomato, self).__init__(days, game)
-        # Get and store Game's directory
-        game_folder = path.dirname(__file__)
-        asset_folder = path.join(game_folder, 'Assets')
-        map_folder = path.join(asset_folder, 'Background')
-
+        self.item_id = 1
         # Load tomato's spritesheet
         self.tomato_spritesheet = Spritesheet(path.join(map_folder, 'crops.png'))
         self.crop_tomato = [self.tomato_spritesheet.parse_sprite('crop_tomato0.png'),
@@ -30,14 +26,18 @@ class Tomato(Crop):
                             self.tomato_spritesheet.parse_sprite('crop_tomato2.png'),
                             self.tomato_spritesheet.parse_sprite('crop_tomato3.png'),
                             self.tomato_spritesheet.parse_sprite('crop_tomato4.png')]
-        self.game = game
+
         self.days = days
         self.planted_date = days
         self.growth_stage = 0
         self.grow_days = 20
         self.harvestable = False
+        self.picked = False
         self.coordx = x
         self.coordy = y
+
+    def get_coordinate(self):
+        return self.coordx, self.coordy
 
     def growing(self, days):
         if (days - self.planted_date) <= self.grow_days:
@@ -55,11 +55,7 @@ class Tomato(Crop):
 class Potato(Crop):
     def __init__(self, x, y, days, game):
         super(Potato, self).__init__(days, game)
-        # Get and store Game's directory
-        game_folder = path.dirname(__file__)
-        asset_folder = path.join(game_folder, 'Assets')
-        map_folder = path.join(asset_folder, 'Background')
-
+        self.item_id = 2
         # Load tomato's spritesheet
         self.potato_spritesheet = Spritesheet(path.join(map_folder, 'crops.png'))
         self.crop_potato = [self.potato_spritesheet.parse_sprite('crop_potato0.png'),
@@ -67,14 +63,19 @@ class Potato(Crop):
                             self.potato_spritesheet.parse_sprite('crop_potato2.png'),
                             self.potato_spritesheet.parse_sprite('crop_potato3.png'),
                             self.potato_spritesheet.parse_sprite('crop_potato4.png')]
+
         self.game = game
         self.days = days
         self.planted_date = days
         self.growth_stage = 0
         self.grow_days = 20
         self.harvestable = False
+        self.picked = False
         self.coordx = x
         self.coordy = y
+
+    def get_coordinate(self):
+        return self.coordx, self.coordy
 
     def growing(self, days):
         if (days - self.planted_date) <= self.grow_days:
@@ -89,13 +90,13 @@ class Potato(Crop):
         screen.blit(self.crop_potato[self.growth_stage], [self.coordx, self.coordy])
 
 
-"""list_a = [Tomato(day)]
-list_a.append(Tomato(day))
-print(day)
-for i in range(16):
-    day += 1
-    for obj in list_a:
-        obj.growing(day)
-        print("Current stage of plant:", obj.growth_stage)
-        print("Grew for:", day - obj.planted_date, "days")
-        print("Is havestable: ", str(obj.harvestable))"""
+class Soil:
+    data = []
+
+    def __init__(self, x, y, game):
+        self.game = game
+        self.coordx = x
+        self.coordy = y
+        self.plowned = False
+        self.seeded = False
+        self.img = None

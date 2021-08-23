@@ -11,9 +11,6 @@ class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        game_folder = path.dirname(__file__)
-        asset_folder = path.join(game_folder, 'Assets')
-        sprites_folder = path.join(asset_folder, 'Character sprites')
         self.images = [pg.image.load(path.join(sprites_folder, 'character_' + str(i) + '.png')).convert_alpha()
                        for i in range(2)]
         self.game = game
@@ -49,6 +46,12 @@ class Player(pg.sprite.Sprite):
             Crop.crop_list = [Tomato(coordx, coordy, days, self.game)]
         else:
             Crop.crop_list.append(Potato(coordx, coordy, days, self.game))
+
+    def harvest(self, coordx, coordy):
+        for crop in Crop.crop_list:
+            if crop.get_coordinate() == (coordx, coordy):
+                self.game.inventory.add_item(crop.item_id, 1)
+                print(self.game.inventory.item_list)
 
     def wall_collision(self, dir):
         pass
