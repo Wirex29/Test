@@ -32,14 +32,14 @@ class Time:
     def running_time(self):
         self.last_minute = self.hidden_timer
         # print("Last minute:", self.last_minute)
-        self.hidden_timer = (pg.time.get_ticks() // 500)
+        self.hidden_timer = (pg.time.get_ticks() // 50)
         # print("Hidden timer:", self.hidden_timer)
         if self.minute < 59:
             if self.hidden_timer >= self.minute and self.hidden_timer != self.last_minute:
                 self.minute += 1
                 # print("Minute:", self.minute)
         else:
-            if self.hour < 24:
+            if self.hour < 23:
                 self.hour += 1
             else:
                 self.hour = 0
@@ -65,6 +65,7 @@ class Time:
         screen.blit(self.clock, self.clock_rect)
 
     def update(self):
+        # self.pass_day()
         self.running_time()
 
 
@@ -176,8 +177,13 @@ class GameScene(Scene):
                 coordx = x - (x % 16)
                 coordy = y - (y % 16)
 
+                self.player.till_soil(coordx, coordy)
+
                 self.player.plant_crop(coordx, coordy, self.time.day)
-                self.player.harvest(coordx, coordy)
+                # self.player.harvest(coordx, coordy)
+            elif event.type == pg.KEYDOWN and event.key == pg.K_j:
+                self.time.pass_day()
+
 
     def update(self):
         # Update character
@@ -200,6 +206,10 @@ class GameScene(Scene):
         # Character render
         for sprite in self.all_sprites:
             screen.blit(sprite.image, self.camera.apply(sprite))
+
+        # Soil render
+        for soil in Soil.data:
+            soil.render(self.map_img)
 
         # Clock render
         self.time.render()

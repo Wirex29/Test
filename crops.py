@@ -1,3 +1,4 @@
+import pygame.image
 from spritesheet import Spritesheet
 from settings import *
 
@@ -33,8 +34,8 @@ class Tomato(Crop):
         self.grow_days = 20
         self.harvestable = False
         self.picked = False
-        self.coordx = x
-        self.coordy = y
+        self.coordx = x + 3
+        self.coordy = y + 3
 
     def get_coordinate(self):
         return self.coordx, self.coordy
@@ -42,9 +43,9 @@ class Tomato(Crop):
     def growing(self, days):
         if (days - self.planted_date) <= self.grow_days:
             # For every 4 days passed since planted date, the crop stage will grow by 1
-            if (days % (self.planted_date + 4)) == 0 and self.growth_stage < 5:
+            if days - (self.planted_date + 4) >= 0 and self.growth_stage < 3:
                 self.growth_stage += 1
-            if self.growth_stage == 5:
+            if self.growth_stage == 4:
                 self.harvestable = True
 
     def update(self, days, screen):
@@ -71,8 +72,8 @@ class Potato(Crop):
         self.grow_days = 20
         self.harvestable = False
         self.picked = False
-        self.coordx = x
-        self.coordy = y
+        self.coordx = x + 4
+        self.coordy = y + 4
 
     def get_coordinate(self):
         return self.coordx, self.coordy
@@ -80,9 +81,9 @@ class Potato(Crop):
     def growing(self, days):
         if (days - self.planted_date) <= self.grow_days:
             # For every 4 days passed since planted date, the crop stage will grow by 1
-            if (days % (self.planted_date + 4)) == 0 and self.growth_stage < 5:
+            if days - (self.planted_date + 4) == 0 and self.growth_stage < 3:
                 self.growth_stage += 1
-            if self.growth_stage == 5:
+            if self.growth_stage == 4:
                 self.harvestable = True
 
     def update(self, days, screen):
@@ -99,4 +100,7 @@ class Soil:
         self.coordy = y
         self.plowned = False
         self.seeded = False
-        self.img = None
+        self.img = pygame.image.load(path.join(map_folder, 'tilled_soil.png'))
+
+    def render(self, screen):
+        screen.blit(self.img, [self.coordx, self.coordy])

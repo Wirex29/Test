@@ -2,8 +2,8 @@ from os import path
 
 # Settings
 ''' WINDOW '''
-SCREEN_WIDTH = 1280
-SCREEN_HEIGHT = 720
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
 TITLE = "Bootleg Harvest Moon"
 FPS = 60
 

@@ -3,6 +3,7 @@ from settings import *
 from constant import *
 from crops import *
 from os import path
+from spritesheet import Spritesheet
 
 vector = pg.math.Vector2
 
@@ -11,13 +12,14 @@ class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
-        self.images = [pg.image.load(path.join(sprites_folder, 'character_' + str(i) + '.png')).convert_alpha()
-                       for i in range(2)]
+        self.sprite_sheet = Spritesheet(path.join(sprites_folder, "character_sprite.png"))
+        self.images = [self.sprite_sheet.parse_sprite('character' + str(i) + '.png') for i in range(0, 7)]
+
         self.game = game
         self.current_image = 0
         self.image = self.images[self.current_image]
-        # self.image = pg.transform.scale(self.image, [32, 32])
         self.rect = self.image.get_rect()
+
         self.vel = vector(0, 0)
         self.pos = vector(x, y)
         print("Drawn a player")
@@ -27,16 +29,19 @@ class Player(pg.sprite.Sprite):
         # Character movements
         # Move left
         if keys[pg.K_a]:
+            self.current_image = (self.current_image + 0.2) % (len(self.images) - 4)
             self.vel.x = -P_SPEED
         # Move up
         elif keys[pg.K_w]:
+            self.current_image = (self.current_image + 0.2) % (len(self.images) - 4)
             self.vel.y = -P_SPEED
         # Move down
         elif keys[pg.K_s]:
+            self.current_image = (self.current_image + 0.2) % (len(self.images) - 4)
             self.vel.y = P_SPEED
         # Move right
         elif keys[pg.K_d]:
-            self.current_image += 1
+            self.current_image = (4 + ((self.current_image + 0.2) % (len(self.images) - 4)) % len(self.images))
             self.vel.x = P_SPEED
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
@@ -53,6 +58,12 @@ class Player(pg.sprite.Sprite):
                 self.game.inventory.add_item(crop.item_id, 1)
                 print(self.game.inventory.item_list)
 
+    def till_soil(self, coordx, coordy):
+        if not Soil.data:
+            Soil.data = [Soil(coordx, coordy, self.game)]
+        else:
+            Soil.data.append(Soil(coordx, coordy, self.game))
+
     def wall_collision(self, dir):
         pass
         """if dir == 'x':
@@ -61,7 +72,7 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         self.keys_signal()
-        # self.image = self.images[self.current_image]
+        self.image = self.images[int(self.current_image)]
         self.pos += self.vel * self.game.dt
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
