@@ -1,15 +1,7 @@
 # CONSTANT
 items = {
-    1: {"Name": "Tomato", "Price": "3", "Quantity": "0"},
-    2: {"Name": "Potato", "Price": "2.5", "Quantity": "0"},
-    3: {"Name": "Tomato Seed", "Growth time": "12", "Price": "1", "Quantity": "0"},
-    4: {"Name": "Potato Seed", "Growth time": "8", "Price": "0.75", "Quantity": "0"}
+    1: {"Name": "Tomato", "Price": "4", "Quantity": "0"},
+    2: {"Name": "Potato", "Price": "3", "Quantity": "0"},
+    3: {"Name": "Tomato Seed", "Growth time": "16", "Price": "2", "Quantity": "0"},
+    4: {"Name": "Potato Seed", "Growth time": "16", "Price": "1", "Quantity": "0"}
 }
-
-"""shop_items = {
-    1: {"Name": "Tomato", "Price": "10"},
-    2: {"Name": "Potato", "Price": "8"},
-    3: {"Name": "Tomato Seed", "Price": "4"},
-    4: {"Name": "Potato Seed", "Price": "3"}
-}
-"""
