@@ -1,5 +1,5 @@
 from os import path
-import pygame
+
 
 # Settings
 ''' WINDOW '''
@@ -20,7 +20,7 @@ TITLE_FONT = None
 DEFAULT_FONT = None
 
 '''PLAYER SETTING'''
-P_SPEED = 50
+P_SPEED = 100
 P_IMG = 'character.png'
 
 '''LAYERS'''

@@ -1,5 +1,4 @@
 import os
-
 from constant import *
 from planting import *
 from os import path
@@ -78,15 +77,17 @@ class Player(pg.sprite.Sprite):
         if self.vel.x != 0 or self.vel.y != 0:
             self.vel *= 0.2
 
-    def plant_crop(self, soil, days, game):
+    def plant_crop(self, soil, days):
         soil.is_seeded = True
         soil.growth_stage = 0
         soil.index = 0
-        if self.equipped_item == 1 and game.inventory.check_inventory(self.equipped_item) >= 1:
+        if self.equipped_item == 1 and self.game.inventory.check_inventory(3) >= 1:
             soil.crop_type = 1
+            self.game.inventory.remove_item(3, 1)
             print(soil.growth_stage)
-        elif self.equipped_item == 2 and game.inventory.check_inventory(self.equipped_item) >= 1:
+        elif self.equipped_item == 2 and self.game.inventory.check_inventory(4) >= 1:
             soil.crop_type = 2
+            self.game.inventory.remove_item(4, 1)
             print(soil.growth_stage)
         soil.planted_date = days
 
@@ -161,16 +162,24 @@ class Inventory:
 
 
 class Shop:
-    def __init__(self):
-        self.img = pygame.image.load(os.path.join(map_folder, 'shop_menu.png')).convert()
+    list = []
+
+    def __init__(self, x, y, w, h):
+        self.img = pg.image.load(os.path.join(map_folder, 'shop_menu.png')).convert_alpha()
         self.img_rect = self.img.get_rect()
-        self.img_rect.centerx = SCREEN_WIDTH / 2
-        self.img_rect.centery = SCREEN_HEIGHT / 2
+        self.img_rect.x = x + 100
+        self.img_rect.y = y
+        self.x = x
+        self.y = y
+        self.rect = pg.Rect(x, y, w, h)
+        self.rect.x = x
+        self.rect.y = y
         self.shop_list = items
-        self.sell_button1 = pg.Rect(120, 320, 32, 10)
-        self.sell_button2 = pg.Rect(120, 320, 32, 10)
-        self.buy_button1 = pg.Rect(170, 320, 32, 10)
-        self.buy_button2 = pg.Rect(170, 320, 32, 10)
+        self.buy_button1 = pg.Rect(self.img_rect.x + 40, self.img_rect.y + 40, 32, 10)
+        self.buy_button2 = pg.Rect(self.img_rect.x + 109, self.img_rect.y + 40, 32, 10)
+        self.sell_button1 = pg.Rect(self.img_rect.x + 39, self.img_rect.y + 96, 32, 10)
+        self.sell_button2 = pg.Rect(self.img_rect.x + 109, self.img_rect.y + 95, 32, 10)
+        self.exit_button = pg.Rect(self.img_rect.x + 120, self.img_rect.y, 25, 17)
         self.shopping = False
 
     def buy_item(self, mousepos, inventory):
@@ -179,37 +188,45 @@ class Shop:
                 if inventory.money >= int(self.shop_list[4]["Price"]):
                     inventory.add_item(4, 1)
                     inventory.money -= int(self.shop_list[4]["Price"])
+                    print("Bought potato seed x1")
                 else:
                     print("Insufficient Funds")
             elif self.buy_button2.collidepoint(mousepos):
                 if inventory.money >= int(self.shop_list[3]["Price"]):
                     inventory.add_item(3, 1)
                     inventory.money -= int(self.shop_list[3]["Price"])
+                    print("Bought tomato seed x1")
                 else:
                     print("Insufficient Funds")
 
     def sell_item(self, mousepos, inventory):
         if self.shopping:
             if self.sell_button1.collidepoint(mousepos):
-                if inventory.money >= int(self.shop_list[2]["Price"]):
+                if inventory.money >= int(self.shop_list[2]["Price"]) and inventory.check_inventory(2) > 0:
                     inventory.remove_item(2, 1)
                     inventory.money += int(self.shop_list[2]["Price"])
-                else:
+                    print("Sold potato x1")
+                elif inventory.money < int(self.shop_list[2]["Price"]):
                     print("Insufficient Funds")
-            elif self.buy_button2.collidepoint(mousepos):
-                if inventory.money >= int(self.shop_list[1]["Price"]):
+                elif inventory.check_inventory(2) < 0:
+                    print("No item to sell!")
+            elif self.sell_button2.collidepoint(mousepos):
+                if inventory.money >= int(self.shop_list[1]["Price"]) and inventory.check_inventory(1) > 0:
                     inventory.remove_item(1, 1)
                     inventory.money += int(self.shop_list[1]["Price"])
-                else:
+                    print("Sold tomato x1")
+                elif inventory.money < int(self.shop_list[1]["Price"]):
                     print("Insufficient Funds")
+                elif inventory.check_inventory(1) < 0:
+                    print("No item to sell!")
 
     def render(self, screen):
         if self.shopping:
             screen.blit(self.img, self.img_rect)
 
-    def update(self, mouse_pos, inventory):
-        self.buy_item(mouse_pos, inventory)
-        self.sell_item(mouse_pos, inventory)
-"""
+    def exit_shop(self, mousepos):
+        if self.shopping and self.exit_button.collidepoint(mousepos):
+            self.shopping = False
 
-"""
+    def update(self, mouse_pos, inventory):
+        pass

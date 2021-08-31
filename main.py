@@ -1,5 +1,7 @@
 import time
+import pygame
 import os
+from settings import *
 from player import *
 from map import *
 from planting import *
@@ -54,7 +56,7 @@ class Time:
 
         self.calendar = font_md.render("Days: " + str(self.day).zfill(2), False, BLACK)
         self.clock = font_md.render(str(self.hour).zfill(2) + ":" + str(self.minute).zfill(2), False, BLACK)
-        self.gold_info = font_md.render("Gold: "+ str(money), False, BLACK)
+        self.gold_info = font_md.render("Gold: " + str(money), False, BLACK)
 
         self.container_rect = self.container.get_rect()
         self.container_rect.top, self.container_rect.left = [0, 0]
@@ -155,12 +157,13 @@ class GameScene(Scene):
                 Obstacle(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
             if tile_object.name == 'soil':
                 Soil.data.append(Soil(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height))
+            if tile_object.name == 'shop':
+                Shop.list.append(Shop(tile_object.x, tile_object.y, tile_object.width, tile_object.height))
 
         self.inventory = Inventory()
         self.dt = clock.tick(FPS) / 1000
         self.time = Time()
         self.draw_debug = False
-        self.shop = Shop()
 
     def process_input(self, events, keys):
         for event in events:
@@ -182,9 +185,7 @@ class GameScene(Scene):
                 elif event.key == pygame.K_3:
                     self.player.switch_item(2)
                     print(self.player.equipped_item)
-                elif event.key == pygame.K_i:
-                    pass
-                    # self.inventory.check_inventory()
+
             # Plant crop at the mouse click position
             elif event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
                 mouse_pos = pg.mouse.get_pos()
@@ -197,10 +198,18 @@ class GameScene(Scene):
                             self.player.till_soil(soil)
                         elif soil.is_plowed and soil.is_seeded is False:
                             soil.is_seeded = True
-                            self.player.plant_crop(soil, self.time.day, self)
+                            self.player.plant_crop(soil, self.time.day)
                             soil.planted_date = self.time.day
                         elif soil.is_plowed and soil.is_seeded and soil.harvestable:
                             self.player.harvest(soil, self)
+
+                for shop in Shop.list:
+                    if shop.rect.colliderect(self.player.interact_rect):
+                        shop.shopping = True
+                    if shop.shopping:
+                        shop.buy_item(mouse_pos, self.inventory)
+                        shop.sell_item(mouse_pos, self.inventory)
+                        shop.exit_shop(mouse_pos)
 
     def update(self):
         # Update character
@@ -216,6 +225,10 @@ class GameScene(Scene):
         # Update time
         self.time.update()
 
+        # Update shop
+        for shop in Shop.list:
+            shop.update(pygame.mouse.get_pos(), self.inventory)
+
     def render(self):
         # Map render
         screen.blit(self.map_img, self.camera.apply_rect(self.map_rect))
@@ -230,6 +243,9 @@ class GameScene(Scene):
                 pygame.draw.rect(screen, CYAN, self.camera.apply_rect(wall.rect), 1)
             for soil in self.soils:
                 pygame.draw.rect(screen, CYAN, self.camera.apply_rect(soil.rect), 1)
+
+        for shop in Shop.list:
+            shop.render(screen)
 
         # Clock render
         self.time.render(self.inventory.money)
