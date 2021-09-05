@@ -111,9 +111,23 @@ class Player(pg.sprite.Sprite):
             self.equipment_img = self.equipment_imgs[2]
 
     def buy_plot(self):
-        self.game.map = TiledMap(path.join(map_folder, "Map2.tmx"))
-        self.game.map_img = self.game.map.make_map()
-        self.game.map_rect = self.game.map_img.get_rect()
+        if self.game.inventory.money >= 500:
+            self.game.map = TiledMap(path.join(map_folder, "Map2.tmx"))
+            self.game.map_img = self.game.map.make_map()
+            self.game.map_rect = self.game.map_img.get_rect()
+            self.game.walls = pg.sprite.Group()
+            self.game.soils = pg.sprite.Group()
+            for tile_object in self.game.map.gameMap.objects:
+                if tile_object.name == 'obstacle':
+                    Obstacle(self.game, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+                if tile_object.name == 'soil':
+                    Soil.data.append(
+                        Soil(self.game, tile_object.x, tile_object.y, tile_object.width, tile_object.height))
+                if tile_object.name == 'shop':
+                    self.game.shop = Shop(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            self.game.inventory.money -= 500
+        else:
+            print("Insufficient money")
 
     def update(self):
         self.keys_signal()
@@ -148,7 +162,7 @@ class Obstacle(pg.sprite.Sprite):
 class Inventory:
     def __init__(self):
         self.item_list = items
-        self.money = 50
+        self.money = 600
 
     def use(self, item):
         self.remove_item(item, 1)
@@ -165,9 +179,38 @@ class Inventory:
         return int(self.item_list[item_id]["Quantity"])
 
 
-class Shop:
-    list = []
+class BuyPlot:
+    def __init__(self, game, x, y, w, h):
+        self.game = game
+        self.img = pg.image.load(path.join(map_folder, 'buy_plot.png')).convert_alpha()
+        self.img_rect = self.img.get_rect()
+        self.img_rect.x = x + 100
+        self.img_rect.y = SCREEN_HEIGHT / 2
+        self.x = x
+        self.y = y
+        self.rect = pg.Rect(x, y, w, h)
+        self.rect.x = x
+        self.rect.y = y
+        self.button1 = pg.Rect(self.img_rect.x + 8, self.img_rect.y + 64, 40, 16)
+        self.button2 = pg.Rect(self.img_rect.x + 80, self.img_rect.y + 64, 40, 16)
+        self.is_rendered = False
 
+    def render(self, screen):
+        if self.is_rendered:
+            screen.blit(self.img, self.img_rect)
+
+    def interaction(self, mousepos):
+        # Interaction "No"
+        if self.button1.collidepoint(mousepos):
+            self.is_rendered = False
+        # Interaction "Yes"
+        elif self.button2.collidepoint(mousepos):
+            print("Bought")
+            self.game.player.buy_plot()
+            self.is_rendered = False
+
+
+class Shop:
     def __init__(self, x, y, w, h):
         self.img = pg.image.load(path.join(map_folder, 'shop_menu.png')).convert_alpha()
         self.img_rect = self.img.get_rect()

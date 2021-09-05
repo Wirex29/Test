@@ -2,8 +2,6 @@ import time
 import pygame
 import sys
 import os
-
-from data.settings import *
 from data.player import *
 from data.map import *
 
@@ -73,13 +71,13 @@ class Time:
         self.container_rect.top, self.container_rect.left = [0, 0]
 
         self.calendar_rect = self.calendar.get_rect()
-        self.calendar_rect.top, self.calendar_rect.left = [8, 13]
+        self.calendar_rect.top, self.calendar_rect.left = [8, 8]
 
         self.gold_info_rect = self.gold_info.get_rect()
-        self.gold_info_rect.top, self.gold_info_rect.left = [64, 13]
+        self.gold_info_rect.top, self.gold_info_rect.left = [64, 8]
 
         self.clock_rect = self.clock.get_rect()
-        self.clock_rect.top, self.clock_rect.left = [36, 13]
+        self.clock_rect.top, self.clock_rect.left = [36, 8]
 
         screen.blit(self.container, self.container_rect)
         screen.blit(self.calendar, self.calendar_rect)
@@ -170,7 +168,9 @@ class GameScene(Scene):
             if tile_object.name == 'soil':
                 Soil.data.append(Soil(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height))
             if tile_object.name == 'shop':
-                Shop.list.append(Shop(tile_object.x, tile_object.y, tile_object.width, tile_object.height))
+                self.shop = Shop(tile_object.x, tile_object.y, tile_object.width, tile_object.height)
+            if tile_object.name == 'buy_plot':
+                self.buy_plot = BuyPlot(self, tile_object.x, tile_object.y, tile_object.width, tile_object.height)
 
         self.inventory = Inventory()
         self.dt = clock.tick(FPS) / 1000
@@ -215,13 +215,19 @@ class GameScene(Scene):
                         elif soil.is_plowed and soil.is_seeded and soil.harvestable:
                             self.player.harvest(soil, self)
 
-                for shop in Shop.list:
-                    if shop.rect.colliderect(self.player.interact_rect):
-                        shop.shopping = True
-                    if shop.shopping:
-                        shop.buy_item(mouse_pos, self.inventory)
-                        shop.sell_item(mouse_pos, self.inventory)
-                        shop.exit_shop(mouse_pos)
+                # Shop Interaction
+                if self.shop.rect.colliderect(self.player.interact_rect):
+                    self.shop.shopping = True
+                if self.shop.shopping:
+                    self.shop.buy_item(mouse_pos, self.inventory)
+                    self.shop.sell_item(mouse_pos, self.inventory)
+                    self.shop.exit_shop(mouse_pos)
+
+                # Buy plot Interaction
+                if self.buy_plot.rect.colliderect(self.player.interact_rect):
+                    self.buy_plot.is_rendered = True
+                if self.buy_plot.is_rendered:
+                    self.buy_plot.interaction(mouse_pos)
 
     def update(self):
         # Update character
@@ -238,8 +244,7 @@ class GameScene(Scene):
         self.time.update()
 
         # Update shop
-        for shop in Shop.list:
-            shop.update(pygame.mouse.get_pos(), self.inventory)
+        self.shop.update(pygame.mouse.get_pos(), self.inventory)
 
     def render(self):
         # Map render
@@ -256,8 +261,11 @@ class GameScene(Scene):
             for soil in self.soils:
                 pygame.draw.rect(screen, CYAN, self.camera.apply_rect(soil.rect), 1)
 
-        for shop in Shop.list:
-            shop.render(screen)
+        # Render shop
+        self.shop.render(screen)
+
+        # Render BuyPlot
+        self.buy_plot.render(screen)
 
         # Clock render
         self.time.render(self.inventory.money)

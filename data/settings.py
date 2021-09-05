@@ -20,7 +20,7 @@ TITLE_FONT = None
 DEFAULT_FONT = None
 
 '''PLAYER SETTING'''
-P_SPEED = 20
+P_SPEED = 50
 P_IMG = 'character.png'
 
 '''LAYERS'''
