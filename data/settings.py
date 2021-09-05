@@ -1,6 +1,5 @@
 from os import path
 
-
 # Settings
 ''' WINDOW '''
 SCREEN_WIDTH = 1280
@@ -20,7 +19,7 @@ TITLE_FONT = None
 DEFAULT_FONT = None
 
 '''PLAYER SETTING'''
-P_SPEED = 50
+P_SPEED = 20
 P_IMG = 'character.png'
 
 '''LAYERS'''

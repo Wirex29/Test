@@ -162,7 +162,7 @@ class Obstacle(pg.sprite.Sprite):
 class Inventory:
     def __init__(self):
         self.item_list = items
-        self.money = 600
+        self.money = 50
 
     def use(self, item):
         self.remove_item(item, 1)
