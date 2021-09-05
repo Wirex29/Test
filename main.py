@@ -1,10 +1,11 @@
 import time
 import pygame
+import sys
 import os
-from settings import *
-from player import *
-from map import *
-from planting import *
+
+from data.settings import *
+from data.player import *
+from data.map import *
 
 # Make window
 pygame.init()
@@ -19,6 +20,16 @@ last_time = time.time()
 font_sm = pygame.font.Font(DEFAULT_FONT, 24)
 font_md = pygame.font.Font(DEFAULT_FONT, 28)
 font_xl = pygame.font.Font(TITLE_FONT, 96)
+
+
+def resource_path(relative_path):
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 class Time:
@@ -101,7 +112,8 @@ class Scene:
 class TitleScene(Scene):
     def __init__(self):
         super().__init__()
-        self.bg_menu = pygame.image.load("Assets/BG_01/BG_01.png").convert()
+        self.bg_menu = pygame.image.load(os.path.join(map_folder, 'menu.png')).convert()
+        print(os.path.join(map_folder, 'start_button.png'))
         self.start_img = pygame.image.load(os.path.join(map_folder, 'start_button.png'))
         self.start_button = pygame.Rect(480, 288, 320, 72)
         self.exit_img = pygame.image.load(os.path.join(map_folder, 'exit_button.png'))

@@ -1,9 +1,8 @@
-import os
-from constant import *
-from planting import *
+from data.constant import *
+from data.planting import *
 from os import path
-from spritesheet import Spritesheet
-from map import collide_hit_rect
+from data.spritesheet import Spritesheet
+from data.map import collide_hit_rect, TiledMap
 
 vector = pg.math.Vector2
 
@@ -111,6 +110,11 @@ class Player(pg.sprite.Sprite):
         elif self.equipped_item == 2:
             self.equipment_img = self.equipment_imgs[2]
 
+    def buy_plot(self):
+        self.game.map = TiledMap(path.join(map_folder, "Map2.tmx"))
+        self.game.map_img = self.game.map.make_map()
+        self.game.map_rect = self.game.map_img.get_rect()
+
     def update(self):
         self.keys_signal()
         self.image = self.images[int(self.current_image)]
@@ -165,7 +169,7 @@ class Shop:
     list = []
 
     def __init__(self, x, y, w, h):
-        self.img = pg.image.load(os.path.join(map_folder, 'shop_menu.png')).convert_alpha()
+        self.img = pg.image.load(path.join(map_folder, 'shop_menu.png')).convert_alpha()
         self.img_rect = self.img.get_rect()
         self.img_rect.x = x + 100
         self.img_rect.y = y

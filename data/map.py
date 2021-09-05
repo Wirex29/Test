@@ -1,6 +1,6 @@
 import pytmx
 import pygame as pg
-from settings import *
+from data.settings import *
 
 
 def collide_hit_rect(one, two):
@@ -20,6 +20,7 @@ class TiledMap:
                     tile = self.gameMap.get_tile_image_by_gid(gid)
                     if tile:
                         surface.blit(tile, (x * self.gameMap.tilewidth, y * self.gameMap.tileheight))
+
 
     def make_map(self):
         surface = pg.Surface((self.width, self.height))

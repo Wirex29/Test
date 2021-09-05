@@ -1,6 +1,6 @@
 import pygame as pg
-from spritesheet import Spritesheet
-from settings import *
+from data.spritesheet import Spritesheet
+from data.settings import *
 
 
 class Soil:

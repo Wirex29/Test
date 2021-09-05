@@ -20,7 +20,7 @@ TITLE_FONT = None
 DEFAULT_FONT = None
 
 '''PLAYER SETTING'''
-P_SPEED = 100
+P_SPEED = 20
 P_IMG = 'character.png'
 
 '''LAYERS'''
@@ -32,5 +32,4 @@ game_folder = path.dirname(__file__)
 asset_folder = path.join(game_folder, 'Assets')
 map_folder = path.join(asset_folder, 'Background')
 sprites_folder = path.join(asset_folder, 'Character sprites')
-
 
